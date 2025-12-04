@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Requests - Bhadasewa</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body { 
+            background: linear-gradient(135deg, #f5f7fa 0%, #f0f4ff 100%);
+            color: #2d3748;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Elements */
+        .bg-element {
+            position: fixed;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(74, 108, 247, 0.05) 0%, rgba(74, 108, 247, 0) 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-element-1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            right: -100px;
+            animation: float 25s infinite ease-in-out;
+        }
+
+        .bg-element-2 {
+            width: 200px;
+            height: 200px;
+            bottom: 15%;
+            left: -50px;
+            animation: float 20s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(20px, -15px) rotate(120deg); }
+            66% { transform: translate(-10px, 15px) rotate(240deg); }
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #4a6cf7 0%, #7b64ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo::before {
+            content: '🏠';
+            font-size: 28px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            padding: 10px 22px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #4a6cf7;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #4a6cf7 0%, #7b64ff 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .nav-btn:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 108, 247, 0.2);
+        }
+
+        .nav-btn:hover::before {
+            opacity: 1;
+        }
+
+        .nav-btn i, .nav-btn span {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1a202c;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #1a202c 0%, #4a6cf7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header p {
+            color: #718096;
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.08),
+                0 1px 0 rgba(255, 255, 255, 0.5) inset;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stat-card.total::before {
+            background: linear-gradient(90deg, #4a6cf7 0%, #7b64ff 100%);
+        }
+
+        .stat-card.pending::before {
+            background: linear-gradient(90deg, #f6ad55 0%, #ed8936 100%);
+        }
+
+        .stat-card.approved::before {
+            background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .stat-card.rejected::before {
+            background: linear-gradient(90deg, #f56565 0%, #e53e3e 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.12),
+                0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .stat-number {
+            font-size: 52px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .total .stat-number { color: #4a6cf7; }
+        .pending .stat-number { color: #ed8936; }
+        .approved .stat-number { color: #38a169; }
+        .rejected .stat-number { color: #e53e3e; }
+
+        .stat-label {
+            color: #718096;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.05),
+                0 1px 0 rgba(255, 255, 255, 0.5) inset;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .tab-btn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #4a6cf7;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab-btn:hover {
+            background: linear-gradient(135deg, #4a6cf7 0%, #7b64ff 100%);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(74, 108, 247, 0.25);
+            border-color: transparent;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #4a6cf7 0%, #7b64ff 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(74, 108, 247, 0.3);
+            border-color: transparent;
+        }
+
+        /* Requests List */
+        .requests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            animation: fadeInUp 0.6s ease-out 0.6s both;
+        }
+
+        .request-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.08),
+                0 1px 0 rgba(255, 255, 255, 0.5) inset;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .request-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .request-card.pending::before {
+            background: linear-gradient(90deg, #f6ad55 0%, #ed8936 100%);
+        }
+
+        .request-card.approved::before {
+            background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .request-card.rejected::before {
+            background: linear-gradient(90deg, #f56565 0%, #e53e3e 100%);
+        }
+
+        .request-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.12),
+                0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .request-info h3 {
+            font-size: 24px;
+            color: #1a202c;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .request-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #718096;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .meta-item i {
+            color: #4a6cf7;
+            width: 16px;
+        }
+
+        .status-badge {
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #fffaf0 0%, #feebc8 100%);
+            color: #c05621;
+            border: 2px solid #fbd38d;
+        }
+
+        .status-approved {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            color: #22543d;
+            border: 2px solid #9ae6b4;
+        }
+
+        .status-rejected {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            color: #742a2a;
+            border: 2px solid #fc8181;
+        }
+
+        .request-body {
+            margin: 25px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .post-details h4 {
+            font-size: 18px;
+            color: #1a202c;
+            margin-bottom: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .post-details p {
+            color: #4a5568;
+            font-size: 15px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .post-details p i {
+            color: #4a6cf7;
+            width: 18px;
+            text-align: center;
+        }
+
+        .requester-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            margin-top: 25px;
+        }
+
+        .requester-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a6cf7 0%, #7b64ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 8px 20px rgba(74, 108, 247, 0.3);
+        }
+
+        .requester-details h5 {
+            font-size: 18px;
+            color: #1a202c;
+            margin-bottom: 6px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .requester-details p {
+            color: #718096;
+            font-size: 14px;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .requester-details p i {
+            color: #4a6cf7;
+            width: 16px;
+        }
+
+        .message-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 14px;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .message-box p {
+            color: #4a5568;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.3px;
+            text-decoration: none;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .action-btn:hover::before {
+            opacity: 1;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-btn i, .action-btn span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .accept-btn { 
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(72, 187, 120, 0.3);
+        }
+
+        .accept-btn:hover {
+            box-shadow: 0 12px 25px rgba(72, 187, 120, 0.4);
+        }
+        
+        .decline-btn { 
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(245, 101, 101, 0.3);
+        }
+
+        .decline-btn:hover {
+            box-shadow: 0 12px 25px rgba(245, 101, 101, 0.4);
+        }
+
+        .view-btn { 
+            background: linear-gradient(135deg, #4a6cf7 0%, #7b64ff 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(74, 108, 247, 0.3);
+        }
+
+        .view-btn:hover {
+            box-shadow: 0 12px 25px rgba(74, 108, 247, 0.4);
+        }
+
+        .message-btn { 
+            background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(159, 122, 234, 0.3);
+        }
+
+        .message-btn:hover {
+            box-shadow: 0 12px 25px rgba(159, 122, 234, 0.4);
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.08),
+                0 1px 0 rgba(255, 255, 255, 0.5) inset;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f1f5f9;
+            border-top: 4px solid #4a6cf7;
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            margin: 0 auto 25px;
+        }
+
+        .loading p {
+            color: #4a6cf7;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.08),
+                0 1px 0 rgba(255, 255, 255, 0.5) inset;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .empty-state i {
+            font-size: 72px;
+            color: #4a6cf7;
+            margin-bottom: 25px;
+            opacity: 0.7;
+        }
+
+        .empty-state h3 {
+            font-size: 28px;
+            color: #1a202c;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            color: #718096;
+            font-size: 18px;
+            max-width: 500px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            position: relative;
+        }
+
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            font-size: 12px;
+            font-weight: 800;
+            min-width: 22px;
+            height: 22px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 6px;
+            box-shadow: 0 4px 15px rgba(245, 101, 101, 0.4);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            z-index: 10;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .container {
+                max-width: 95%;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 16px 25px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .page-header h1 {
+                font-size: 36px;
+            }
+
+            .page-header p {
+                font-size: 16px;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .request-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .request-actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 12px 15px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .nav-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .page-header h1 {
+                font-size: 28px;
+            }
+
+            .page-header p {
+                font-size: 15px;
+            }
+
+            .request-card {
+                padding: 20px 15px;
+            }
+
+            .request-info h3 {
+                font-size: 20px;
+            }
+
+            .requester-info {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-element bg-element-1"></div>
+    <div class="bg-element bg-element-2"></div>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">Bhadasewa</div>
+        <div class="nav-buttons">
+            <a href="owner.html" class="nav-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="post.html" class="nav-btn"><i class="fas fa-plus-circle"></i> Create Post</a>
+            <a href="profile.html" class="nav-btn"><i class="fas fa-user-circle"></i> Profile</a>
+            <a href="login.html" class="nav-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1><i class="fas fa-inbox"></i> Rental Requests</h1>
+            <p>Manage and respond to booking requests from renters</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading your requests...</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div id="statsContainer" class="stats-container" style="display:none;">
+            <div class="stat-card total">
+                <div class="stat-number" id="totalRequests">0</div>
+                <div class="stat-label">Total Requests</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-number" id="pendingRequests">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card approved">
+                <div class="stat-number" id="approvedRequests">0</div>
+                <div class="stat-label">Approved</div>
+            </div>
+            <div class="stat-card rejected">
+                <div class="stat-number" id="rejectedRequests">0</div>
+                <div class="stat-label">Rejected</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div id="tabsContainer" class="tabs" style="display:none;">
+            <button class="tab-btn active" onclick="filterRequests('all')">
+                <i class="fas fa-layer-group"></i> All Requests
+            </button>
+            <button class="tab-btn" onclick="filterRequests('pending')">
+                <i class="fas fa-clock"></i> Pending
+            </button>
+            <button class="tab-btn" onclick="filterRequests('approved')">
+                <i class="fas fa-check-circle"></i> Approved
+            </button>
+            <button class="tab-btn" onclick="filterRequests('rejected')">
+                <i class="fas fa-times-circle"></i> Rejected
+            </button>
+        </div>
+
+        <!-- Requests List -->
+        <div class="requests-list" id="requestsList">
+            <!-- Dynamic content -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-inbox"></i>
+            <h3>No Requests Yet</h3>
+            <p>When renters send booking requests for your posts, they will appear here.</p>
+            <a href="post.html" class="action-btn view-btn" style="display: inline-flex; width: auto; margin-top: 20px;">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create New Post</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+    let allRequests = [];
+    let currentFilter = 'all';
+
+    // Fetch requests from server
+    async function fetchRequests() {
+        try {
+            console.log("Fetching requests...");
+            
+            // Show loading state
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('statsContainer').style.display = 'none';
+            document.getElementById('tabsContainer').style.display = 'none';
+            
+            // Fetch requests
+            const response = await fetch('/RentalApp/requests', {
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log("Requests received:", data);
+            
+            // Hide loading state
+            document.getElementById('loadingState').style.display = 'none';
+            
+            if (Array.isArray(data)) {
+                allRequests = data;
+                updateUI();
+            } else if (data.error) {
+                throw new Error(data.error);
+            } else {
+                throw new Error('Invalid response format');
+            }
+            
+        } catch (error) {
+            console.error('Error fetching requests:', error);
+            document.getElementById('loadingState').style.display = 'none';
+            showEmptyState(`Failed to load requests: ${error.message}`);
+            
+            // Try to get counts
+            try {
+                const countResponse = await fetch('/RentalApp/requests?action=count', {
+                    credentials: 'include'
+                });
+                if (countResponse.ok) {
+                    const counts = await countResponse.json();
+                    updateStatsWithCounts(counts);
+                }
+            } catch (countError) {
+                console.error('Error fetching counts:', countError);
+            }
+        }
+    }
+
+    // Fetch request counts
+    async function fetchCounts() {
+        try {
+            const response = await fetch('/RentalApp/requests?action=count', {
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const counts = await response.json();
+                updateStatsWithCounts(counts);
+            }
+        } catch (error) {
+            console.error('Error fetching counts:', error);
+        }
+    }
+
+    // Update UI with requests
+    function updateUI() {
+        console.log("Updating UI with", allRequests.length, "requests");
+        
+        updateNotificationBadge();
+        updateStats();
+        
+        // Show stats and tabs
+        document.getElementById('statsContainer').style.display = 'grid';
+        document.getElementById('tabsContainer').style.display = 'flex';
+        
+        filterRequests(currentFilter);
+    }
+
+    // Update notification badge
+    function updateNotificationBadge() {
+        const pendingCount = allRequests.filter(req => req.status === 'pending').length;
+        const badge = document.getElementById('notificationCount');
+        
+        if (pendingCount > 0) {
+            badge.textContent = pendingCount > 99 ? '99+' : pendingCount;
+            badge.style.display = 'flex';
+            document.title = `(${pendingCount}) Requests - Bhadasewa`;
+        } else {
+            badge.style.display = 'none';
+            document.title = 'Requests - Bhadasewa';
+        }
+    }
+
+    // Update stats
+    function updateStats() {
+        const total = allRequests.length;
+        const pending = allRequests.filter(req => req.status === 'pending').length;
+        const approved = allRequests.filter(req => req.status === 'approved').length;
+        const rejected = allRequests.filter(req => req.status === 'rejected').length;
+        
+        document.getElementById('totalRequests').textContent = total;
+        document.getElementById('pendingRequests').textContent = pending;
+        document.getElementById('approvedRequests').textContent = approved;
+        document.getElementById('rejectedRequests').textContent = rejected;
+    }
+
+    // Update stats with counts
+    function updateStatsWithCounts(counts) {
+        if (counts && typeof counts === 'object') {
+            document.getElementById('totalRequests').textContent = counts.total || 0;
+            document.getElementById('pendingRequests').textContent = counts.pending || 0;
+            document.getElementById('approvedRequests').textContent = counts.approved || 0;
+            document.getElementById('rejectedRequests').textContent = counts.rejected || 0;
+            
+            // Show stats container
+            document.getElementById('statsContainer').style.display = 'grid';
+            document.getElementById('tabsContainer').style.display = 'flex';
+            
+            // Update notification badge
+            const badge = document.getElementById('notificationCount');
+            if (counts.pending > 0) {
+                badge.textContent = counts.pending > 99 ? '99+' : counts.pending;
+                badge.style.display = 'flex';
+                document.title = `(${counts.pending}) Requests - Bhadasewa`;
+            }
+        }
+    }
+
+    // Filter requests by status
+    function filterRequests(status) {
+        console.log("Filtering by:", status);
+        currentFilter = status;
+        
+        // Update active tab
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent.toLowerCase().includes(status) || 
+                (status === 'all' && btn.textContent.toLowerCase().includes('all'))) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // Filter requests
+        let filteredRequests = allRequests;
+        if (status !== 'all') {
+            filteredRequests = allRequests.filter(req => req.status === status);
+        }
+        
+        // Render filtered requests
+        renderRequests(filteredRequests);
+    }
+
+    // Render requests to page
+    function renderRequests(requests) {
+        const container = document.getElementById('requestsList');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (requests.length === 0) {
+            container.innerHTML = '';
+            emptyState.style.display = 'block';
+            
+            if (currentFilter === 'all') {
+                emptyState.querySelector('p').textContent = 'When renters send booking requests for your posts, they will appear here.';
+            } else {
+                emptyState.querySelector('p').textContent = `No ${currentFilter} requests found.`;
+            }
+            
+            return;
+        }
+        
+        emptyState.style.display = 'none';
+        container.innerHTML = '';
+        
+        requests.forEach(request => {
+            const requestCard = document.createElement('div');
+            requestCard.className = `request-card ${request.status}`;
+            
+            // Format date
+            const requestDate = new Date(request.created_at);
+            const formattedDate = requestDate.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            const formattedTime = requestDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            requestCard.innerHTML = `
+                <div class="request-header">
+                    <div class="request-info">
+                        <h3>${escapeHtml(request.post_title || 'Rental Property')}</h3>
+                        <div class="request-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-user"></i>
+                                <span>${escapeHtml(request.renter_name || 'Renter')}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>${formattedDate}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-clock"></i>
+                                <span>${formattedTime}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status-badge status-${request.status}">
+                        <i class="fas fa-${getStatusIcon(request.status)}"></i>
+                        ${request.status.toUpperCase()}
+                    </div>
+                </div>
+                
+                <div class="request-body">
+                    <div class="post-details">
+                        <h4><i class="fas fa-info-circle"></i> Property Details</h4>
+                        <p><i class="fas fa-tag"></i> <strong>Category:</strong> ${escapeHtml(request.category || 'Not specified')}</p>
+                        <p><i class="fas fa-money-bill-wave"></i> <strong>Price:</strong> Rs. ${escapeHtml(request.price || '0')} / month</p>
+                        <p><i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> ${escapeHtml(request.location || 'Location not specified')}</p>
+                    </div>
+                    
+                    <div class="requester-info">
+                        <div class="requester-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="requester-details">
+                            <h5><i class="fas fa-user-tag"></i> ${escapeHtml(request.renter_name || 'Anonymous Renter')}</h5>
+                            <p><i class="fas fa-envelope"></i> ${escapeHtml(request.renter_email || 'No email provided')}</p>
+                            <p><i class="fas fa-phone"></i> ${escapeHtml(request.renter_phone || 'No phone provided')}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="message-box">
+                        <p><strong><i class="fas fa-comment"></i> Message:</strong> ${escapeHtml(request.message || 'Request to book your rental.')}</p>
+                    </div>
+                </div>
+                
+                <div class="request-actions">
+                    ${request.status === 'pending' ? `
+                        <button class="action-btn accept-btn" onclick="updateRequest(${request.id}, 'approved')">
+                            <i class="fas fa-check"></i>
+                            <span>Accept Request</span>
+                        </button>
+                        <button class="action-btn decline-btn" onclick="updateRequest(${request.id}, 'rejected')">
+                            <i class="fas fa-times"></i>
+                            <span>Decline Request</span>
+                        </button>
+                    ` : ''}
+                    
+                    ${request.post_id ? `
+                        <a href="postDetails.html?id=${request.post_id}" class="action-btn view-btn">
+                            <i class="fas fa-eye"></i>
+                            <span>View Property</span>
+                        </a>
+                    ` : ''}
+                    
+                    <button class="action-btn message-btn" onclick="sendMessage('${escapeHtml(request.renter_name || '')}', '${escapeHtml(request.renter_email || '')}')">
+                        <i class="fas fa-comment-alt"></i>
+                        <span>Contact Renter</span>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(requestCard);
+        });
+    }
+
+    // Get icon for status
+    function getStatusIcon(status) {
+        switch(status) {
+            case 'pending': return 'clock';
+            case 'approved': return 'check-circle';
+            case 'rejected': return 'times-circle';
+            default: return 'circle';
+        }
+    }
+
+    // Update request status
+    async function updateRequest(requestId, status) {
+        const action = status === 'approved' ? 'accept' : 'decline';
+        if (!confirm(`Are you sure you want to ${action} this request?`)) {
+            return;
+        }
+        
+        try {
+            const formData = new URLSearchParams();
+            formData.append('action', 'update');
+            formData.append('requestId', requestId);
+            formData.append('status', status);
+            
+            const response = await fetch('/RentalApp/requests', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                credentials: 'include',
+                body: formData
+            });
+            
+            const result = await response.text();
+            
+            if (response.ok) {
+                showNotification(result, 'success');
+                await fetchRequests(); // Refresh
+            } else {
+                throw new Error(result);
+            }
+        } catch (error) {
+            console.error('Error updating request:', error);
+            showNotification('Failed to update request. Please try again.', 'error');
+        }
+    }
+
+    // Send message to renter
+    function sendMessage(renterName, renterEmail) {
+        if (!renterEmail || renterEmail === 'No email provided') {
+            showNotification('No email address available for this renter.', 'error');
+            return;
+        }
+        
+        const subject = encodeURIComponent(`Regarding Your Rental Request - Bhadasewa`);
+        const body = encodeURIComponent(`Hello ${renterName || 'Renter'},\n\nThank you for your interest in my property. `);
+        window.location.href = `mailto:${renterEmail}?subject=${subject}&body=${body}`;
+    }
+
+    // Show notification
+    function showNotification(message, type = 'info') {
+        // Remove existing notifications
+        document.querySelectorAll('.notification').forEach(n => n.remove());
+        
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+            <span>${message}</span>
+            <button onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+        `;
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#38a169' : '#e53e3e'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10000;
+            animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        `;
+        
+        // Add animation if not present
+        if (!document.querySelector('#notification-animation')) {
+            const style = document.createElement('style');
+            style.id = 'notification-animation';
+            style.textContent = `
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 4000);
+    }
+
+    // Show empty state
+    function showEmptyState(message) {
+        const emptyState = document.getElementById('emptyState');
+        const container = document.getElementById('requestsList');
+        
+        container.innerHTML = '';
+        emptyState.querySelector('h3').textContent = 'No Requests Yet';
+        emptyState.querySelector('p').textContent = message;
+        emptyState.style.display = 'block';
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("Page loaded, fetching requests...");
+        fetchRequests();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(fetchRequests, 30000);
+    });
+
+    // Function for renters to send booking requests (for property details page)
+    async function sendBookingRequest(postId) {
+        try {
+            console.log("Sending booking request for post ID:", postId);
+            
+            const message = prompt("Enter a message for the owner (optional):", 
+                                  "I'm interested in renting this property. Please contact me.");
+            
+            if (message === null) {
+                return; // User cancelled
+            }
+            
+            const requestData = {
+                postId: postId,
+                message: message || "Request to book your rental."
+            };
+            
+            console.log("Sending data:", requestData);
+            
+            const response = await fetch('/RentalApp/requestBooking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(requestData)
+            });
+            
+            const result = await response.json();
+            console.log("Response:", result);
+            
+            if (result.success) {
+                showNotification(result.message, 'success');
+                // Disable request button if exists
+                const requestBtn = document.querySelector('.request-btn');
+                if (requestBtn) {
+                    requestBtn.disabled = true;
+                    requestBtn.innerHTML = '<i class="fas fa-check-circle"></i> Request Sent';
+                    requestBtn.style.background = '#a0aec0';
+                }
+            } else {
+                showNotification(result.message, 'error');
+            }
+            
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('Failed to send request. Please try again.', 'error');
+        }
+    }
+    </script>
+</body>
+</html>

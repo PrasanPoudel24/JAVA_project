@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Management - Online Rental System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Controls Section */
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-box input {
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 16px;
+            width: 300px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: #3498db;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-refresh {
+            background: linear-gradient(135deg, #27ae60, #219150);
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            overflow-x: auto;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .users-table th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+        }
+
+        .users-table th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .users-table th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .users-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            color: #555;
+            font-size: 15px;
+        }
+
+        .users-table tr:hover {
+            background: #f8f9fa;
+            transform: scale(1.01);
+            transition: all 0.2s;
+        }
+
+        .users-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status badges */
+        .role-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-owner {
+            background: #e8f5e8;
+            color: #27ae60;
+        }
+
+        .role-renter {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .role-admin {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+
+        /* Loading and Error States */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffeaea;
+            color: #e74c3c;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #e74c3c;
+            margin: 20px 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            .users-table {
+                min-width: 1000px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 15px;
+        }
+
+        .btn-edit {
+            background: #f39c12;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-users"></i>
+                Users Management
+            </h1>
+            <p>View and manage all registered users in the system</p>
+        </div>
+
+        <div class="stats" id="statsContainer">
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="ownersCount">0</div>
+                <div class="stat-label">Property Owners</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="rentersCount">0</div>
+                <div class="stat-label">Renters</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search users by name, email, or role...">
+                <button class="btn" onclick="searchUsers()">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            <button class="btn btn-refresh" onclick="loadUsers()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+
+        <div class="table-container">
+            <div id="loadingMessage" class="loading">
+                <div class="spinner"></div>
+                <p>Loading users data...</p>
+            </div>
+
+            <div id="errorMessage" class="error" style="display: none;">
+                <!-- Error messages will appear here -->
+            </div>
+
+            <table class="users-table" id="usersTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>Province</th>
+                        <th>District</th>
+                        <th>Municipality</th>
+                        <th>Ward No.</th>
+                        <th>Joined Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- Users data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Global variable to store all users
+        let allUsers = [];
+
+        // Load users when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUsers();
+        });
+
+        function loadUsers() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const usersTable = document.getElementById('usersTable');
+
+            // Show loading, hide table and error
+            loadingMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+            usersTable.style.display = 'none';
+
+            fetch('users')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(users => {
+                    allUsers = users;
+                    displayUsers(users);
+                    updateStats(users);
+                })
+                .catch(error => {
+                    console.error('Error loading users:', error);
+                    showError('Failed to load users: ' + error.message);
+                });
+        }
+
+        function displayUsers(users) {
+            const loadingMessage = document.getElementById('loadingMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const usersTable = document.getElementById('usersTable');
+            const tableBody = document.getElementById('usersTableBody');
+
+            // Hide loading and error, show table
+            loadingMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            usersTable.style.display = 'table';
+
+            // Clear existing rows
+            tableBody.innerHTML = '';
+
+            if (users.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="11" style="text-align: center; color: #666; padding: 40px;">
+                            <i class="fas fa-users" style="font-size: 48px; margin-bottom: 15px; display: block; color: #bdc3c7;"></i>
+                            No users found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Add user rows
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                
+                // Format the role badge
+                const roleClass = `role-${user.role?.toLowerCase() || 'user'}`;
+                const roleText = user.role || 'User';
+                
+                // Format date
+                const joinDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A';
+
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td><strong>${user.name || 'N/A'}</strong></td>
+                    <td>${user.email || 'N/A'}</td>
+                    <td>${user.phone || 'N/A'}</td>
+                    <td><span class="role-badge ${roleClass}">${roleText}</span></td>
+                    <td>${user.province || 'N/A'}</td>
+                    <td>${user.district || 'N/A'}</td>
+                    <td>${user.municipal || 'N/A'}</td>
+                    <td>${user.ward_num || 'N/A'}</td>
+                    <td>${joinDate}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn btn-sm btn-edit" onclick="editUser(${user.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-delete" onclick="deleteUser(${user.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateStats(users) {
+            const totalUsers = users.length;
+            const ownersCount = users.filter(user => user.role && user.role.toLowerCase() === 'owner').length;
+            const rentersCount = users.filter(user => user.role && user.role.toLowerCase() === 'renter').length;
+
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('ownersCount').textContent = ownersCount;
+            document.getElementById('rentersCount').textContent = rentersCount;
+        }
+
+        function searchUsers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                displayUsers(allUsers);
+                return;
+            }
+
+            const filteredUsers = allUsers.filter(user => 
+                (user.name && user.name.toLowerCase().includes(searchTerm)) ||
+                (user.email && user.email.toLowerCase().includes(searchTerm)) ||
+                (user.role && user.role.toLowerCase().includes(searchTerm)) ||
+                (user.phone && user.phone.includes(searchTerm))
+            );
+
+            displayUsers(filteredUsers);
+        }
+
+        function showError(message) {
+            const loadingMessage = document.getElementById('loadingMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const usersTable = document.getElementById('usersTable');
+
+            loadingMessage.style.display = 'none';
+            usersTable.style.display = 'none';
+            errorMessage.style.display = 'block';
+            errorMessage.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Error Loading Users</h3>
+                <p>${message}</p>
+                <button class="btn" onclick="loadUsers()" style="margin-top: 15px;">
+                    <i class="fas fa-sync-alt"></i> Try Again
+                </button>
+            `;
+        }
+
+        // Placeholder functions for actions
+        function editUser(userId) {
+            alert(`Edit user with ID: ${userId}\nThis functionality can be implemented.`);
+        }
+
+        function deleteUser(userId) {
+            if (confirm(`Are you sure you want to delete user with ID: ${userId}?`)) {
+                alert(`Delete user with ID: ${userId}\nThis functionality can be implemented.`);
+            }
+        }
+
+        // Enable search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchUsers();
+            }
+        });
+    </script>
+</body>
+</html>
